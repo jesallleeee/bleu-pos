@@ -7,6 +7,7 @@
   display: flex;
   align-items: flex-start;
   position: relative;
+  height: auto;
 }
 
 /* Sidebar Styles */
@@ -20,6 +21,13 @@
 
 .sidebar-container.ps-collapsed {
   width: 85px !important;
+}
+
+/* Align icons to the left in collapsed mode */
+.sidebar-container.ps-collapsed .ps-menu-button {
+  justify-content: flex-start !important;
+  padding-left: 15px !important;
+  text-align: left;
 }
 
 /* Sidebar inner container */
@@ -74,7 +82,7 @@
 
 /* Menu item style */
 .ps-menu-button {
-  padding: 10px 15px !important;
+  padding: 10px 15px;
   margin: 4px 0;
   border-radius: 6px;
   font-size: 14px;
@@ -84,7 +92,7 @@
 }
 
 .ps-menu-button:hover {
-  background-color: #E9F5FE !important;
+  background-color: #E9F5FE;
   color: #4B929D;
 }
 
@@ -92,6 +100,7 @@
   background-color: #E9F5FE !important;
   color: #007b99 !important;
   font-weight: 500;
+  border-radius: 6;
 }
 
 .ps-menu-button svg {

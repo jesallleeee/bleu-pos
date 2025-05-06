@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import { useLocation } from 'react-router-dom';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import './sidebar.css';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,7 @@ import {
 function SidebarComponent() {
   const [collapsed, setCollapsed] = useState(false);
   const toggleSidebar = () => setCollapsed(!collapsed);
+  const location = useLocation();
 
   return (
     <div className="sidebar-wrapper">
@@ -24,7 +26,11 @@ function SidebarComponent() {
 
           {!collapsed && <div className="section-title">GENERAL</div>}
           <Menu>
-            <MenuItem icon={<FontAwesomeIcon icon={faHome} />} component={<Link to="/admin/dashboard" />}>
+            <MenuItem 
+            icon={<FontAwesomeIcon icon={faHome} />}
+            component={<Link to="/admin/dashboard" />}
+            active={location.pathname === '/admin/dashboard'}
+            >
               Dashboard
             </MenuItem>
 
@@ -58,8 +64,11 @@ function SidebarComponent() {
             </MenuItem>
 
             {!collapsed && <div className="section-title">EMPLOYEES</div>}
-            <MenuItem icon={<FontAwesomeIcon icon={faUsers} />} component={<Link to="/employee-records" />}>
-              Employee Records
+            <MenuItem
+            icon={<FontAwesomeIcon icon={faUsers} />}
+            component={<Link to="/admin/employeeRecords" />}
+            active={location.pathname === '/admin/employeeRecords'}
+            >  Employee Records
             </MenuItem>
             <MenuItem icon={<FontAwesomeIcon icon={faUserTie} />} component={<Link to="/role-management" />}>
               Role Management

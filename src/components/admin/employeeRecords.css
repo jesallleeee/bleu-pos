@@ -1,0 +1,259 @@
+body {
+    background: #eaf6f8;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.empRecords {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+}
+
+.employees {
+    flex: 1;
+    padding-right: 60px;
+    padding-top: 20px;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.empRecords-content {
+    margin-top: 60px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 8px;
+  border: 0.5px solid #EBEBEB;
+  border-radius: 6px;
+  width: 80%;
+  color: #888;
+}
+
+.add-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 9px 9px;
+  gap: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn svg {
+  font-size: 12px;
+}
+
+.employee-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.employee-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.employee-name {
+  font-weight: 600;
+}
+
+.employee-id {
+  font-size: 12px;
+  color: #888;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.status-badge.active {
+  background-color: #d4edda;
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-border {
+  background: #EBF5F6;
+  height: 700px;
+  width: 500px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modal-container {
+  background: #fff;
+  border-radius: 12px;
+  height: auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(176, 176, 176, 0.2);
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 30px;
+  margin-bottom: 25px;
+  align-content: center;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 97%;
+  padding: 1.2rem 1.5rem;
+  box-sizing: border-box;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.modal-header h2 {
+  color: #1aa3b3;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #1aa3b3;
+}
+
+.modal-body {
+  align-content: center;
+  margin: 0;
+}
+
+.modal-profile-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.circle {
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plus {
+  font-size: 2rem;
+  color: #999;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.required {
+  color: red;
+  margin-left: 2px;
+}
+
+.form-grid input, .form-grid select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.row > div {
+  flex: 1;
+}
+
+.save-btn {
+  margin-top: 1rem;
+  background-color: #007bff;
+  color: white;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.save-btn:hover {
+  background-color: #0069d9;
+}

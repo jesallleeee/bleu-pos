@@ -11,6 +11,8 @@ import {
   faChartLine,
   faShoppingCart,
   faClock,
+  faArrowTrendUp,
+  faArrowTrendDown
 } from '@fortawesome/free-solid-svg-icons';
 import { FaChevronDown, FaBell } from "react-icons/fa";
 
@@ -34,9 +36,60 @@ const salesData = [
   { name: 'Sun', sales: 63 },
 ];
 
+const currentDate = new Date().toLocaleString("en-US", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+});
+
+const data = [
+  {
+    title: "Today's Sales",
+    current: 28123,
+    previous: 25000,
+    format: "currency",
+    icon: faMoneyBillWave,
+    type: "sales"
+  },
+  {
+    title: "Today's Revenue",
+    current: 18003,
+    previous: 17000,
+    format: "currency",
+    icon: faChartLine,
+    type: "revenue"
+  },
+  {
+    title: "Today's Orders",
+    current: 45,
+    previous: 50,
+    format: "number",
+    icon: faShoppingCart,
+    type: "orders"
+  },
+  {
+    title: "Pending Orders",
+    current: 5,
+    previous: 5,
+    format: "number",
+    icon: faClock,
+    type: "pendings"
+  }
+];
+
+const formatValue = (value, format) => {
+  return format === "currency"
+    ? `₱${value.toLocaleString()}`
+    : value.toLocaleString();
+};
+
 const Dashboard = () => {
-  const [revenueFilter, setRevenueFilter] = useState("Yearly");
-  const [salesFilter, setSalesFilter] = useState("Yearly");
+  const [revenueFilter, setRevenueFilter] = useState("Monthly");
+  const [salesFilter, setSalesFilter] = useState("Monthly");
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -47,13 +100,13 @@ const Dashboard = () => {
     <div className="dashboard">
       <Sidebar />
       <main className="dashboard-main">
-        <header className="dashboard-header">
+        <header className="header">
         <div className="header-left">
-            <h2 className="dashboard-title">Dashboard</h2>
+            <h2 className="page-title">Dashboard</h2>
         </div>
 
         <div className="header-right">
-            <div className="header-date">SATURDAY, APRIL 12 2025, 11:53:38 AM</div>
+          <div className="header-date">{currentDate}</div>
             <div className="header-profile">
             <div className="profile-pic" />
             <div className="profile-info">
@@ -78,39 +131,36 @@ const Dashboard = () => {
         </div>
         </header>
 
-
+        <div className="dashboard-contents">
         <div className="dashboard-cards">
-          <div className="card blue">
-            <div className="card-icon"><FontAwesomeIcon icon={faMoneyBillWave} /></div>
+        {data.map((card, index) => {
+          const { current, previous } = card;
+          const diff = current - previous;
+          const percent = previous !== 0 ? (diff / previous) * 100 : 0;
+          const isImproved = current > previous;
+          //const isDeclined = current < previous;
+          const hasChange = current !== previous;
+
+        return (
+          <div key={index} className={`card ${card.type}`}>
             <div className="card-text">
-              <div className="card-title">Today's Sales</div>
-              <div className="card-value">₱28,123.00</div>
-              <div className="card-percent green">↑ 10.5%</div>
-            </div>
+              <div className="card-title">{card.title}</div>
+              <div className="card-details"> {/* New wrapper to align value and percent */}
+                <div className="card-value">{formatValue(current, card.format)}</div>
+                  {hasChange && (
+                    <div className={`card-percent ${isImproved ? 'green' : 'red'}`}>
+                      <FontAwesomeIcon icon={isImproved ? faArrowTrendUp : faArrowTrendDown} />
+                      &nbsp;&nbsp;&nbsp;{Math.abs(percent).toFixed(1)}%
+                    </div>
+                  )}
+              </div>
+              </div>
+              <div className="card-icon">
+                <FontAwesomeIcon icon={card.icon} />
+              </div>
           </div>
-          <div className="card green">
-            <div className="card-icon"><FontAwesomeIcon icon={faChartLine} /></div>
-            <div className="card-text">
-              <div className="card-title">Today's Revenue</div>
-              <div className="card-value">₱18,003.00</div>
-              <div className="card-percent green">↑ 10.5%</div>
-            </div>
-          </div>
-          <div className="card teal">
-            <div className="card-icon"><FontAwesomeIcon icon={faShoppingCart} /></div>
-            <div className="card-text">
-              <div className="card-title">Today's Orders</div>
-              <div className="card-value">45</div>
-              <div className="card-percent green">↑ 10.5%</div>
-            </div>
-          </div>
-          <div className="card orange">
-            <div className="card-icon"><FontAwesomeIcon icon={faClock} /></div>
-            <div className="card-text">
-              <div className="card-title">Pending Orders</div>
-              <div className="card-value">5</div>
-            </div>
-          </div>
+        );
+        })}
         </div>
 
         <div className="dashboard-charts">
@@ -128,7 +178,7 @@ const Dashboard = () => {
                 <option value="Yearly">Yearly</option>
               </select>
             </div>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={350}>
               <LineChart data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -155,7 +205,7 @@ const Dashboard = () => {
                 <option value="Yearly">Yearly</option>
               </select>
             </div>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={350}>
               <AreaChart data={salesData}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -171,6 +221,7 @@ const Dashboard = () => {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
         </div>
       </main>
     </div>
