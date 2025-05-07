@@ -27,9 +27,9 @@ function SidebarComponent() {
           {!collapsed && <div className="section-title">GENERAL</div>}
           <Menu>
             <MenuItem 
-            icon={<FontAwesomeIcon icon={faHome} />}
-            component={<Link to="/admin/dashboard" />}
-            active={location.pathname === '/admin/dashboard'}
+              icon={<FontAwesomeIcon icon={faHome} />}
+              component={<Link to="/admin/dashboard" />}
+              active={location.pathname === '/admin/dashboard'}
             >
               Dashboard
             </MenuItem>
@@ -65,12 +65,16 @@ function SidebarComponent() {
 
             {!collapsed && <div className="section-title">EMPLOYEES</div>}
             <MenuItem
-            icon={<FontAwesomeIcon icon={faUsers} />}
-            component={<Link to="/admin/employeeRecords" />}
-            active={location.pathname === '/admin/employeeRecords'}
+              icon={<FontAwesomeIcon icon={faUsers} />}
+              component={<Link to="/admin/employeeRecords" />}
+              active={location.pathname === '/admin/employeeRecords'}
             >  Employee Records
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faUserTie} />} component={<Link to="/role-management" />}>
+            <MenuItem 
+            icon={<FontAwesomeIcon icon={faUserTie} />}
+            component={<Link to="/admin/roleManagement" />}
+            active={location.pathname === '/admin/roleManagement'}
+            >
               Role Management
             </MenuItem>
           </Menu>

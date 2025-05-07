@@ -46,6 +46,9 @@ const currentDate = new Date().toLocaleString("en-US", {
   second: "numeric",
 });
 
+const userRole = "Admin";
+const userName = "Lim Alcovendas";
+
 const data = [
   {
     title: "Today's Sales",
@@ -110,8 +113,8 @@ const Dashboard = () => {
             <div className="header-profile">
             <div className="profile-pic" />
             <div className="profile-info">
-                <div className="profile-role">Hi! I'm Admin</div>
-                <div className="profile-name">Lim Alcovendas</div>
+                <div className="profile-role">Hi! I'm {userRole}</div>
+                <div className="profile-name">{userName}</div>
             </div>
             <div className="dropdown-icon" onClick={toggleDropdown}>
             <FaChevronDown />
