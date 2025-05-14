@@ -7,7 +7,7 @@ import logo from '../assets/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars, faHome, faChartBar, faFileAlt, faTags, faBoxes,
-  faList, faReceipt, faCog, faUserTie, faUsers
+  faReceipt, faCog, faUsers
 } from '@fortawesome/free-solid-svg-icons';
 
 function SidebarComponent() {
@@ -24,7 +24,8 @@ function SidebarComponent() {
             <img src={logo} alt="Logo" className="logo" />
           </div>
 
-          {!collapsed && <div className="section-title">GENERAL</div>}
+          <div className='item-wrap'>
+          {!collapsed && <div className="section-title">OPERATIONS</div>}
           <Menu>
             <MenuItem 
               icon={<FontAwesomeIcon icon={faHome} />}
@@ -33,51 +34,37 @@ function SidebarComponent() {
             >
               Dashboard
             </MenuItem>
-
-            {!collapsed && <div className="section-title">SALES & ORDERS</div>}
             <MenuItem icon={<FontAwesomeIcon icon={faChartBar} />} component={<Link to="/sales-monitoring" />}>
               Sales Monitoring
             </MenuItem>
             <MenuItem icon={<FontAwesomeIcon icon={faFileAlt} />} component={<Link to="/transaction-history" />}>
               Transaction History
             </MenuItem>
-
-            {!collapsed && <div className="section-title">PRODUCT MANAGEMENT</div>}
-            <MenuItem icon={<FontAwesomeIcon icon={faBoxes} />} component={<Link to="/product-list" />}>
-              Product List
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faBoxes} />} 
+              component={<Link to="/admin/products" />}
+              active={location.pathname === '/admin/products'}
+              >
+              Products
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faList} />} component={<Link to="/categories" />}>
-              Categories
-            </MenuItem>
-
-            {!collapsed && <div className="section-title">PROMOTIONS</div>}
             <MenuItem icon={<FontAwesomeIcon icon={faTags} />} component={<Link to="/manage-discounts" />}>
               Manage Discounts
             </MenuItem>
-
-            {!collapsed && <div className="section-title">REPORTS</div>}
+            {!collapsed && <div className="section-title">ADMIN</div>}
             <MenuItem icon={<FontAwesomeIcon icon={faReceipt} />} component={<Link to="/sales-reports" />}>
               Sales Reports
             </MenuItem>
             <MenuItem icon={<FontAwesomeIcon icon={faCog} />} component={<Link to="/transaction-reports" />}>
               Transaction Reports
             </MenuItem>
-
-            {!collapsed && <div className="section-title">EMPLOYEES</div>}
             <MenuItem
               icon={<FontAwesomeIcon icon={faUsers} />}
               component={<Link to="/admin/employeeRecords" />}
               active={location.pathname === '/admin/employeeRecords'}
             >  Employee Records
             </MenuItem>
-            <MenuItem 
-            icon={<FontAwesomeIcon icon={faUserTie} />}
-            component={<Link to="/admin/roleManagement" />}
-            active={location.pathname === '/admin/roleManagement'}
-            >
-              Role Management
-            </MenuItem>
           </Menu>
+          </div>
         </div>
       </Sidebar>
 

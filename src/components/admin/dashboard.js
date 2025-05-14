@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import "../admin/dashboard.css";
 import Sidebar from "../sidebar";
 import {
@@ -15,6 +16,7 @@ import {
   faArrowTrendDown
 } from '@fortawesome/free-solid-svg-icons';
 import { FaChevronDown, FaBell } from "react-icons/fa";
+import { DEFAULT_PROFILE_IMAGE } from "./employeeRecords";
 
 const revenueData = [
   { name: 'Jan', income: 5000, expense: 3000 },
@@ -46,8 +48,9 @@ const currentDate = new Date().toLocaleString("en-US", {
   second: "numeric",
 });
 
-const userRole = "Admin";
-const userName = "Lim Alcovendas";
+const getAuthToken = () => {
+    return localStorage.getItem("access_token");
+};
 
 const data = [
   {
@@ -94,137 +97,168 @@ const Dashboard = () => {
   const [revenueFilter, setRevenueFilter] = useState("Monthly");
   const [salesFilter, setSalesFilter] = useState("Monthly");
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("access_token"); // Correct key
+    console.log("Access Token:", token);
+  }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        navigate('/');
+    };
+
+  const [loggedInUserDisplay, setLoggedInUserDisplay] = useState({ role: "User", name: "Current User" });
+  
+      useEffect(() => {
+          const token = getAuthToken();
+          if (token) {
+              try {
+                  const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                  setLoggedInUserDisplay({
+                      name: decodedToken.sub || "Current User",
+                      role: decodedToken.role || "User"
+                  });
+              } catch (error) {
+                  console.error("Error decoding token for display:", error);
+              }
+          }
+      }, []);
+  
   return (
     <div className="dashboard">
       <Sidebar />
       <main className="dashboard-main">
         <header className="header">
-        <div className="header-left">
-            <h2 className="page-title">Dashboard</h2>
-        </div>
+          <div className="header-left"> <h2 className="page-title">Employee Records</h2> </div>
+            <div className="header-right">
+              <div className="header-date">{currentDate}</div>
+              <div className="header-profile">
+                <div className="profile-left">
+                  <div className="profile-pic" style={{ backgroundImage: `url(${DEFAULT_PROFILE_IMAGE})` }}></div>
+                  <div className="profile-info">
+                  <div className="profile-role">Hi! I'm {loggedInUserDisplay.role}</div>
+                  <div className="profile-name">{loggedInUserDisplay.name}</div>
+                </div>
+              </div>
 
-        <div className="header-right">
-          <div className="header-date">{currentDate}</div>
-            <div className="header-profile">
-            <div className="profile-pic" />
-            <div className="profile-info">
-                <div className="profile-role">Hi! I'm {userRole}</div>
-                <div className="profile-name">{userName}</div>
+                <div className="profile-right">
+                  <div className="dropdown-icon" onClick={toggleDropdown}><FaChevronDown /></div>
+                  <div className="bell-icon"><FaBell className="bell-outline" /></div>
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="profile-dropdown">
+                    <ul>
+                      <li onClick={handleLogout}>Logout</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="dropdown-icon" onClick={toggleDropdown}>
-            <FaChevronDown />
-            </div>
-            <div className="bell-icon">
-                <FaBell className="bell-outline" />
-            </div>
-            {isDropdownOpen && (
-            <div className="profile-dropdown">
-              <ul>
-                <li>Edit Profile</li>
-                <li>Logout</li>
-              </ul>
-            </div>
-             )}
-            </div>
-        </div>
-        </header>
+          </header>
 
         <div className="dashboard-contents">
-        <div className="dashboard-cards">
-        {data.map((card, index) => {
-          const { current, previous } = card;
-          const diff = current - previous;
-          const percent = previous !== 0 ? (diff / previous) * 100 : 0;
-          const isImproved = current > previous;
-          //const isDeclined = current < previous;
-          const hasChange = current !== previous;
+          <div className="dashboard-cards">
+            {data.map((card, index) => {
+              const { current, previous } = card;
+              const diff = current - previous;
+              const percent = previous !== 0 ? (diff / previous) * 100 : 0;
+              const isImproved = current > previous;
+              const hasChange = current !== previous;
 
-        return (
-          <div key={index} className={`card ${card.type}`}>
-            <div className="card-text">
-              <div className="card-title">{card.title}</div>
-              <div className="card-details"> {/* New wrapper to align value and percent */}
-                <div className="card-value">{formatValue(current, card.format)}</div>
-                  {hasChange && (
-                    <div className={`card-percent ${isImproved ? 'green' : 'red'}`}>
-                      <FontAwesomeIcon icon={isImproved ? faArrowTrendUp : faArrowTrendDown} />
-                      &nbsp;&nbsp;&nbsp;{Math.abs(percent).toFixed(1)}%
+              return (
+                <div key={index} className={`card ${card.type}`}>
+                  <div className="card-text">
+                    <div className="card-title">{card.title}</div>
+                    <div className="card-details">
+                      <div className="card-value">{formatValue(current, card.format)}</div>
+                      {hasChange && (
+                        <div className={`card-percent ${isImproved ? 'green' : 'red'}`}>
+                          <FontAwesomeIcon icon={isImproved ? faArrowTrendUp : faArrowTrendDown} />
+                          &nbsp;&nbsp;&nbsp;{Math.abs(percent).toFixed(1)}%
+                        </div>
+                      )}
                     </div>
-                  )}
-              </div>
-              </div>
-              <div className="card-icon">
-                <FontAwesomeIcon icon={card.icon} />
-              </div>
-          </div>
-        );
-        })}
-        </div>
-
-        <div className="dashboard-charts">
-          <div className="chart-box">
-            <div className="chart-header">
-              <span>Revenue</span>
-              <select
-                className="chart-dropdown"
-                value={revenueFilter}
-                onChange={(e) => setRevenueFilter(e.target.value)}
-              >
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
-            </div>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="income" stroke="#00b4d8" />
-                <Line type="monotone" dataKey="expense" stroke="#ff4d6d" />
-              </LineChart>
-            </ResponsiveContainer>
+                  </div>
+                  <div className="card-icon">
+                    <FontAwesomeIcon icon={card.icon} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="chart-box">
-            <div className="chart-header">
-              <span>Sales</span>
-              <select
-                className="chart-dropdown"
-                value={salesFilter}
-                onChange={(e) => setSalesFilter(e.target.value)}
-              >
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
+          <div className="dashboard-charts">
+            <div className="chart-box">
+              <div className="chart-header">
+                <span>Revenue</span>
+                <select
+                  className="chart-dropdown"
+                  value={revenueFilter}
+                  onChange={(e) => setRevenueFilter(e.target.value)}
+                >
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="income" stroke="#00b4d8" />
+                  <Line type="monotone" dataKey="expense" stroke="#ff4d6d" />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={salesData}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00b4d8" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#00b4d8" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <CartesianGrid strokeDasharray="3 3" />
-                <Tooltip />
-                <Area type="monotone" dataKey="sales" stroke="#00b4d8" fillOpacity={1} fill="url(#colorSales)" />
-              </AreaChart>
-            </ResponsiveContainer>
+
+            <div className="chart-box">
+              <div className="chart-header">
+                <span>Sales</span>
+                <select
+                  className="chart-dropdown"
+                  value={salesFilter}
+                  onChange={(e) => setSalesFilter(e.target.value)}
+                >
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <AreaChart data={salesData}>
+                  <defs>
+                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00b4d8" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#00b4d8" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#00b4d8"
+                    fillOpacity={1}
+                    fill="url(#colorSales)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
         </div>
       </main>
     </div>
