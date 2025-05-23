@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
+import homeImage from "../assets/coffee.jpg";
+import { Eye, EyeOff } from "lucide-react";
 import "./login.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import logo from '../assets/logo.png';
 
 function Login() {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -35,12 +38,13 @@ function Login() {
 
         localStorage.setItem("access_token", data.access_token);
 
-        const decodedToken = JSON.parse(atob(data.access_token.split('.')[1]));
+        // decode token and get role
+        const decodedToken = JSON.parse(atob(data.access_token.split(".")[1]));
         const userRole = decodedToken.role;
 
-        if (userRole === 'admin') {
+        if (userRole === "admin") {
           navigate("/admin/dashboard");
-        } else if (userRole === 'manager') {
+        } else if (userRole === "manager") {
           navigate("/manager-home");
         } else {
           alert("Role not recognized.");
@@ -55,48 +59,65 @@ function Login() {
   };
 
   return (
-    <div className="wrapper">
-      <div className="login-container login-background">
-        <div className="login-form-container">
-          <img src={logo} alt="Logo" className="logo-login" />
-          <form className="login-form" onSubmit={handleLogin}>
-            <h5 className="system-label">POINT OF SALE SYSTEM</h5>
-            <h1 className="login-title">LOGIN</h1>
+    <div className="login-container">
+      <div className="login-box">
+        <div className="login-form">
+          <div className="logo-wrapper">
+            <img src={logo} alt="Logo" className="login-logo" />
+          </div>
+          <p>Enter your credentials to continue.</p>
 
-            <div className="input-group">
-              <FontAwesomeIcon icon={faUser} className="icon" />
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
-                placeholder="Username"
+                id="username"
+                placeholder="Enter your username"
                 value={credentials.username}
-                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, username: e.target.value })
+                }
                 required
+                autoComplete="username"
               />
             </div>
 
-            <div className="input-group">
-              <FontAwesomeIcon icon={faLock} className="icon" />
-              <input
-                type={passwordVisible ? "text" : "password"}
-                placeholder="Password"
-                value={credentials.password}
-                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                required
-              />
-              <FontAwesomeIcon
-                icon={passwordVisible ? faEyeSlash : faEye}
-                className="eye-icon"
-                onClick={() => setPasswordVisible(!passwordVisible)}
-              />
+            <div className="form-group password-group">
+              <label htmlFor="password">Password</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="Enter your password"
+                  value={credentials.password}
+                  onChange={(e) =>
+                    setCredentials({ ...credentials, password: e.target.value })
+                  }
+                  required
+                  autoComplete="current-password"
+                />
+                <span
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ cursor: "pointer" }}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </span>
+              </div>
             </div>
 
-            <button type="submit" className="login-button">LOGIN</button>
-
-            <p className="forgot-password">
-              Forgot Password? <Link to="/reset-password">Reset Here</Link>
-            </p>
+            <button type="submit" className="login-button">
+              Log In
+            </button>
           </form>
         </div>
+
+        <div
+          className="login-image"
+          style={{ backgroundImage: `url(${homeImage})` }}
+        ></div>
       </div>
     </div>
   );

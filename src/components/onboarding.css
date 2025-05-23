@@ -4,7 +4,7 @@ body {
   height: 100%;
 }
 
-.login-container {
+.onboarding-login-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,7 +14,7 @@ body {
   box-sizing: border-box;
 }
 
-.login-box {
+.onboarding-login-box {
   display: flex;
   max-width: 850px;
   width: 100%;
@@ -25,42 +25,60 @@ body {
   overflow: hidden;
 }
 
-.login-form {
+.onboarding-heading {
+  font-size: 26px;
+  color: #5ba7b4;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 0;
+}
+
+.onboarding-subtext {
+  font-size: 16px;
+  color: #444;
+  text-align: left;
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.onboarding-login-form {
   flex: 1;
   padding: 40px;
 }
 
-.logo-wrapper {
-  margin-top: 0;
+.onboarding-logo-wrapper {
+  display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.login-logo {
+.onboarding-login-logo {
   height: 100px;
   width: auto;
 }
 
-.login-image {
+.onboarding-login-image {
   flex: 1;
   background-color: #f5f5f5;
   background-size: cover;
   background-position: center;
 }
 
-p {
-  color: #4B929D;
+.onboarding-login-form p {
+  color: #444;
   margin-top: 0;
-  margin-bottom: 15px; /* reduced */
+  margin-bottom: 15px;
   font-weight: 300;
   text-align: start;
 }
 
-.form-group {
+.onboarding-form-group {
   margin-bottom: 10px;
 }
 
-label {
+.onboarding-label {
   display: block;
   text-align: left;
   margin-bottom: 8px;
@@ -68,8 +86,8 @@ label {
   color: #5EA5B3;
 }
 
-input[type="text"],
-input[type="password"] {
+.onboarding-input-text,
+.onboarding-input-password {
   width: 100%;
   padding: 12px;
   border: 1px solid #c0c9c9;
@@ -78,22 +96,22 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
+.onboarding-input-text:focus,
+.onboarding-input-password:focus {
   outline: none;
   border-color: #5EA5B3;
 }
 
-.password-wrapper {
+.onboarding-password-wrapper {
   position: relative;
 }
 
-.password-wrapper input {
+.onboarding-password-wrapper input {
   width: 100%;
   padding-right: 40px;
 }
 
-.toggle-password {
+.onboarding-toggle-password {
   position: absolute;
   top: 50%;
   right: 12px;
@@ -104,7 +122,7 @@ input[type="password"]:focus {
   color: #5BA7B4;
 }
 
-.login-button {
+.onboarding-login-button {
   width: 100%;
   padding: 12px;
   background-color: #4B929D;
@@ -114,9 +132,27 @@ input[type="password"]:focus {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 20px;
 }
 
-.login-button:hover {
+.onboarding-login-button:hover {
   background-color: #4B929D;
+}
+
+.onboarding-login-form button.onboarding-login-button {
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.onboarding-login-form p {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #5ba7b4;
+  font-weight: 300;
+}
+
+.onboarding-signup-link {
+  margin-top: 20px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #666;
 }

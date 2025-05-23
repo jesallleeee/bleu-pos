@@ -34,10 +34,18 @@ function SidebarComponent() {
             >
               Dashboard
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faChartBar} />} component={<Link to="/sales-monitoring" />}>
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faChartBar} />} 
+              component={<Link to="/admin/salesMon" />}
+              active={location.pathname === '/admin/salesMon'}
+              >
               Sales Monitoring
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faFileAlt} />} component={<Link to="/transaction-history" />}>
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faFileAlt} />} 
+              component={<Link to="/admin/transHis" />}
+              active={location.pathname === '/admin/transHis'}
+              >
               Transaction History
             </MenuItem>
             <MenuItem 
@@ -47,14 +55,26 @@ function SidebarComponent() {
               >
               Products
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faTags} />} component={<Link to="/manage-discounts" />}>
-              Manage Discounts
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faTags} />}
+              component={<Link to="/admin/discounts" />}
+              active={location.pathname === '/admin/discounts'}
+              >
+              Discounts
             </MenuItem>
             {!collapsed && <div className="section-title">ADMIN</div>}
-            <MenuItem icon={<FontAwesomeIcon icon={faReceipt} />} component={<Link to="/sales-reports" />}>
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faReceipt} />} 
+              component={<Link to="/admin/salesRep" />}
+              active={location.pathname === '/admin/salesRep'}
+            >
               Sales Reports
             </MenuItem>
-            <MenuItem icon={<FontAwesomeIcon icon={faCog} />} component={<Link to="/transaction-reports" />}>
+            <MenuItem 
+              icon={<FontAwesomeIcon icon={faCog} />} 
+              component={<Link to="/admin/transRep" />}
+              active={location.pathname === '/admin/transRep'}
+            >
               Transaction Reports
             </MenuItem>
             <MenuItem

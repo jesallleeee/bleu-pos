@@ -319,8 +319,7 @@ function Products() {
       <div className="products">
         <header className="header">
           <div className="header-left">
-            {" "}
-            <h2 className="page-title">Products</h2>{" "}
+            <h2 className="page-title">Products</h2>
           </div>
           <div className="header-right">
             <div className="header-date">{currentDate}</div>
