@@ -3,7 +3,7 @@
 }
 
 .navbar{ 
-  padding: 40px 60px;
+  padding: 20px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -79,7 +79,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #4B929D;
-  margin-right: 20px;
+  margin-right: 25px;
   text-transform: uppercase;
 }
 
@@ -179,4 +179,126 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .navbar {
+    padding: 15px 30px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .nav-icons {
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
+  .navbar-profile {
+    width: 100%;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+
+  .nav-profile-right {
+    margin-left: 0;
+    padding-right: 0;
+    justify-content: flex-end;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-nav {
+    height: 70px;
+  }
+
+  .navbar {
+    padding: 10px 20px;
+  }
+
+  .nav-icons {
+    gap: 10px;
+  }
+
+  .nav-item {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .navbar-date {
+    font-size: 12px;
+    margin-right: 0;
+  }
+
+  .navbar-profile {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .nav-profile-left {
+    gap: 8px;
+  }
+
+  .nav-profile-name,
+  .nav-profile-role {
+    font-size: 13px;
+  }
+
+  .nav-profile-pic {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-profile-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .nav-dropdown-icon,
+  .nav-bell-icon {
+    font-size: 16px;
+  }
+
+  .nav-profile-dropdown {
+    top: 100%;
+    right: 10px;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 15px;
+  }
+
+  .nav-item {
+    font-size: 13px;
+  }
+
+  .nav-icons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .navbar-profile {
+    padding: 8px;
+  }
+
+  .nav-profile-name {
+    font-size: 14px;
+  }
+
+  .nav-profile-role {
+    font-size: 11px;
+  }
 }
