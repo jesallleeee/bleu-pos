@@ -7,7 +7,7 @@ import DataTable from "react-data-table-component";
 import { DEFAULT_PROFILE_IMAGE } from "./employeeRecords";
 
 const currentDate = new Date().toLocaleString("en-US", {
-  weekday: "long",
+  weekday: "long", 
   year: "numeric",
   month: "long",
   day: "numeric",
