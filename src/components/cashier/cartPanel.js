@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faMoneyBills, faQrcode, faPercent } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faMoneyBills, faQrcode, faPercent} from '@fortawesome/free-solid-svg-icons';
 import { FiMinus, FiPlus } from "react-icons/fi";
 import './cartPanel.css';
 
@@ -43,7 +43,10 @@ const CartPanel = ({
   // Discounts modal state
   const [showDiscountsModal, setShowDiscountsModal] = useState(false);
   const [appliedDiscounts, setAppliedDiscounts] = useState([]);
-  const [stagedDiscounts, setStagedDiscounts] = useState([]); // NEW: For staging discounts
+  const [stagedDiscounts, setStagedDiscounts] = useState([]);
+
+  // Transaction summary modal state
+  const [showTransactionSummary, setShowTransactionSummary] = useState(false);
 
   // Available discounts
   const availableDiscounts = [
@@ -138,6 +141,16 @@ const CartPanel = ({
     closeAddonsModal();
   };
 
+  useEffect(() => {
+    if (!isCartOpen) {
+      setCartItems([]);
+      setAppliedDiscounts([]);
+      setStagedDiscounts([]);
+      setPaymentMethod('Cash');
+      setOrderType('Dine in'); // or your default value
+    }
+  }, [isCartOpen]);
+
   const getAddonPrice = (addon, quantity) => {
     return (addonPrices?.[addon] || 0) * quantity;
   };
@@ -224,6 +237,34 @@ const CartPanel = ({
     const updatedCart = [...cartItems];
     updatedCart.splice(index, 1);
     setCartItems(updatedCart);
+  };
+
+  // Function to handle process transaction
+  const handleProcessTransaction = () => {
+    if (cartItems.length === 0) {
+      alert('Please add items to your cart before processing the transaction.');
+      return;
+    }
+    setShowTransactionSummary(true);
+  };
+
+  // Function to confirm transaction
+  const confirmTransaction = () => {
+    // Here you would typically send the order to your backend
+    alert('Transaction processed successfully!');
+    
+    // Clear the cart and close modals
+    setCartItems([]);
+    setAppliedDiscounts([]);
+    setShowTransactionSummary(false);
+  };
+
+  // Function to get applied discount names
+  const getAppliedDiscountNames = () => {
+    return appliedDiscounts.map(discountId => {
+      const discount = availableDiscounts.find(d => d.id === discountId);
+      return discount ? discount.name : '';
+    }).filter(name => name !== '');
   };
 
   const AddonsModal = () => {
@@ -336,6 +377,111 @@ const CartPanel = ({
               <span>Total Discount: ₱{getStagedDiscount().toFixed(0)}</span> {/* Show staged discount preview */}
             </div>
             <button className="apply-btn" onClick={applyDiscounts}>Apply Discounts</button> {/* Use applyDiscounts function */}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const TransactionSummaryModal = () => {
+    if (!showTransactionSummary) return null;
+
+    return (
+      <div className="trnsSummary-modal-overlay" onClick={() => setShowTransactionSummary(false)}>
+        <div className="trnsSummary-transaction-summary-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="trnsSummary-modal-header">
+            <h3>Transaction Summary</h3>
+            <button className="trnsSummary-close-modal" onClick={() => setShowTransactionSummary(false)}>×</button>
+          </div>
+
+          <div className="trnsSummary-summary-content">
+            <div className="trnsSummary-order-info-grid">
+              <div className="trnsSummary-info-item">
+                <span className="trnsSummary-label">Order Type:</span>
+                <span className="trnsSummary-value">{orderType}</span>
+              </div>
+              <div className="trnsSummary-info-item">
+                <span className="trnsSummary-label">Payment Method:</span>
+                <span className="trnsSummary-value">{paymentMethod}</span>
+              </div>
+            </div>
+
+            <div className="trnsSummary-order-items">
+              <h4>Order Items</h4>
+              <div className="trnsSummary-items-scrollable">
+              {cartItems.map((item, index) => (
+                <div key={index} className="trnsSummary-summary-item">
+                  <div className="trnsSummary-item-header">
+                    <span className="trnsSummary-item-name">{item.name}</span>
+                    <span className="trnsSummary-item-total">₱{((item.price + getTotalAddonsPrice(item.addons)) * item.quantity).toFixed(0)}</span>
+                  </div>
+                  <div className="trnsSummary-item-details">
+                    <span className="trnsSummary-quantity">Qty: {item.quantity}</span>
+                    <span className="trnsSummary-base-price">₱{item.price.toFixed(0)} each</span>
+                  </div>
+                  {item.addons && getTotalAddonsPrice(item.addons) > 0 && (
+                    <div className="trnsSummary-item-addons">
+                      {item.addons.espressoShots > 0 && (
+                        <span>• {item.addons.espressoShots} Espresso Shot(s) (+₱{(addonPrices.espressoShots * item.addons.espressoShots).toFixed(0)})</span>
+                      )}
+                      {item.addons.seaSaltCream > 0 && (
+                        <span>• {item.addons.seaSaltCream} Sea Salt Cream (+₱{(addonPrices.seaSaltCream * item.addons.seaSaltCream).toFixed(0)})</span>
+                      )}
+                      {item.addons.syrupSauces > 0 && (
+                        <span>• {item.addons.syrupSauces} Syrup/Sauce(s) (+₱{(addonPrices.syrupSauces * item.addons.syrupSauces).toFixed(0)})</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+              </div>  
+            </div>
+
+           {appliedDiscounts.length > 0 && (
+            <div className="trnsSummary-applied-discounts">
+              <div className="trnsSummary-applied-discounts-header">
+                <h4>Applied Discounts</h4>
+                <div className="trnsSummary-applied-discounts-list">
+                  {getAppliedDiscountNames().map((discountName, index) => (
+                    <div key={index} className="trnsSummary-discount-item-summary">
+                      <FontAwesomeIcon icon={faPercent} />
+                      <span>{discountName}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+
+            <div className="trnsSummary-price-breakdown">
+              <div className="trnsSummary-breakdown-row">
+                <span>Subtotal:</span>
+                <span>₱{getSubtotal().toFixed(0)}</span>
+              </div>
+              {getDiscount() > 0 && (
+                <div className="trnsSummary-breakdown-row trnsSummary-discount">
+                  <span>Discount:</span>
+                  <span>-₱{getDiscount().toFixed(0)}</span>
+                </div>
+              )}
+              <hr />
+              <div className="trnsSummary-breakdown-row trnsSummary-total">
+                <span>Total Amount:</span>
+                <span>₱{getTotal().toFixed(0)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="trnsSummary-confirmation-section">
+            <div className="trnsSummary-modal-footer-transaction">
+              <button className="trnsSummary-cancel-btn" onClick={() => setShowTransactionSummary(false)}>
+                Review Order
+              </button>
+              <button className="trnsSummary-confirm-btn" onClick={confirmTransaction}>
+                Confirm & Process
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -456,8 +602,8 @@ const CartPanel = ({
                 <span>Cash</span>
               </button>
               <button 
-                className={`ewallet ${paymentMethod === 'E-Wallet' ? 'active' : ''}`}
-                onClick={() => setPaymentMethod('E-Wallet')}
+                className={`gcash ${paymentMethod === 'GCash' ? 'active' : ''}`}
+                onClick={() => setPaymentMethod('GCash')}
               >
                 <FontAwesomeIcon icon={faQrcode} />
                 <span>GCash</span>
@@ -465,7 +611,7 @@ const CartPanel = ({
             </div>
           </div>
 
-          <button className="process-button">
+          <button className="process-button" onClick={handleProcessTransaction}>
             Process Transaction
           </button>
         </div>
@@ -473,6 +619,7 @@ const CartPanel = ({
       
       <AddonsModal />
       <DiscountsModal />
+      <TransactionSummaryModal />
     </>
   );
 };
