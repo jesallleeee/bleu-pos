@@ -5,7 +5,7 @@ import logo from '../assets/logo.png';
 import { HiOutlineShoppingBag, HiOutlineClipboardList, HiOutlineChartBar } from 'react-icons/hi';
 import { FaBell, FaChevronDown } from 'react-icons/fa';
 
-const Navbar = ({ isCartOpen }) => {
+const Navbar = ({ isCartOpen, isOrderPanelOpen }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,8 +50,15 @@ const Navbar = ({ isCartOpen }) => {
     }
   }, []);
 
+  // Determine which class to apply based on open panels
+  const getNavbarClass = () => {
+    if (isCartOpen) return 'navbar with-cart';
+    if (isOrderPanelOpen) return 'navbar with-order-panel';
+    return 'navbar';
+  };
+
   return (
-    <header className={`navbar ${isCartOpen ? 'with-cart' : ''}`}>
+    <header className={getNavbarClass()}>
       <div className="navbar-left">
         <div className="navbar-logo">
           <img src={logo} alt="Logo" className="logo-nav" />
@@ -60,7 +67,7 @@ const Navbar = ({ isCartOpen }) => {
           <Link to="/cashier/menu" className={`nav-item ${location.pathname === '/cashier/menu' ? 'active' : ''}`}>
             <HiOutlineShoppingBag className="icon" /> Menu
           </Link>
-          <Link to="/orders" className={`nav-item ${location.pathname === '/orders' ? 'active' : ''}`}>
+          <Link to="/cashier/orders" className={`nav-item ${location.pathname === '/cashier/orders' ? 'active' : ''}`}>
             <HiOutlineClipboardList className="icon" /> Orders
           </Link>
           <Link to="/sales" className={`nav-item ${location.pathname === '/sales' ? 'active' : ''}`}>

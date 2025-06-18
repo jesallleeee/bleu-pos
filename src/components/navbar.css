@@ -2,17 +2,21 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.navbar{ 
+.navbar {
   padding: 20px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  min-height: 80px;
+  transition: padding-right 0.3s ease;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 40px;
+  flex-wrap: wrap;
 }
 
 .navbar-logo {
@@ -30,6 +34,7 @@
 .nav-icons {
   display: flex;
   gap: 24px;
+  flex-wrap: wrap;
   margin-top: 20px;
 }
 
@@ -68,11 +73,14 @@
 }
 
 .navbar-right {
+  flex-grow: 1;
+  justify-content: flex-end;
   display: flex;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
   margin-top: 20px;
+  min-width: 280px;
 }
 
 .navbar-date {
@@ -178,5 +186,53 @@
 
 /* Shift navbar when cart panel is open */
 .navbar.with-cart {
-  margin-right:390px;
+  padding-right: 450px;
+}
+
+/* Shift navbar when order panel is open */
+.navbar.with-order-panel {
+  padding-right: 420px;
+}
+
+/* Media query for tablets */
+@media (max-width: 1024px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 120px;
+    padding: 20px 30px;
+  }
+
+  .navbar-left, .navbar-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .nav-icons {
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .navbar-profile {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .navbar-date {
+    margin-right: 0;
+  }
+
+  .nav-profile-dropdown {
+    top: 100%;
+    right: 10px;
+  }
+
+  /* Reset padding on smaller screens for both cart and order panel */
+  .navbar.with-cart,
+  .navbar.with-order-panel {
+    padding-right: 30px;
+  }
 }

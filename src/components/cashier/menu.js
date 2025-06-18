@@ -24,6 +24,7 @@ const productData = [
     price: 129.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Barista Choice',
+    promo: true,
   },
   {
     name: 'Matcha Frappe',
@@ -31,6 +32,7 @@ const productData = [
     price: 145.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Frappe',
+    promo: false,
   },
   {
     name: 'Americano',
@@ -38,6 +40,7 @@ const productData = [
     price: 105.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Specialty Coffee',
+    promo: true,
   },
   {
     name: 'Caramel Macchiato',
@@ -45,6 +48,7 @@ const productData = [
     price: 140.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Premium Coffee',
+    promo: false,
   },
   {
     name: 'Classic Milk Tea',
@@ -52,6 +56,7 @@ const productData = [
     price: 110.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Milktea',
+    promo: false,
   },
   {
     name: 'Sparkling Lemonade',
@@ -59,6 +64,7 @@ const productData = [
     price: 99.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Sparkling Series',
+    promo: true,
   },
   {
     name: 'Club Sandwich',
@@ -66,6 +72,7 @@ const productData = [
     price: 165.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Sandwich',
+    promo: false,
   },
   {
     name: 'Creamy Carbonara',
@@ -73,6 +80,7 @@ const productData = [
     price: 175.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Pasta',
+    promo: false,
   },
   {
     name: 'Mango Graham Frappe',
@@ -80,6 +88,7 @@ const productData = [
     price: 139.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Frappe',
+    promo: true,
   },
   {
     name: 'Merch Mug',
@@ -87,6 +96,7 @@ const productData = [
     price: 199.0,
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93',
     category: 'Merch',
+    promo: false,
   },
 ];
 
@@ -115,19 +125,18 @@ function Menu() {
   }, [cartItems]);
 
   const filterProducts = () => {
-    let filtered = [];
-    
     if (selectedFilter.type === 'all') {
-      filtered = products;
+      return products;
+    } else if (selectedFilter.type === 'promo') {
+      return products.filter(product => product.promo === true);
     } else if (selectedFilter.type === 'group') {
-      filtered = products.filter(product =>
+      return products.filter(product =>
         categories[selectedFilter.value].includes(product.category)
       );
     } else if (selectedFilter.type === 'item') {
-      filtered = products.filter(product => product.category === selectedFilter.value);
+      return products.filter(product => product.category === selectedFilter.value);
     }
-
-    return filtered;
+    return [];
   };
 
   const filteredProducts = filterProducts();
@@ -166,6 +175,84 @@ function Menu() {
     }
   };
 
+  // Helper function to get addon description
+  const getAddonsDescription = (addons) => {
+    const descriptions = [];
+    if (addons.espressoShots > 0) {
+      descriptions.push(`Espresso Shot: ₱${50 * addons.espressoShots}`);
+    }
+    if (addons.seaSaltCream > 0) {
+      descriptions.push(`Sea Salt Cream: ₱${30 * addons.seaSaltCream}`);
+    }
+    if (addons.syrupSauces > 0) {
+      descriptions.push(`Syrup/Sauce: ₱${20 * addons.syrupSauces}`);
+    }
+    return descriptions;
+  };
+
+  // Helper function to calculate total addons price
+  const getTotalAddonsPrice = (addons) => {
+    if (!addons) return 0;
+    return (addons.espressoShots * 50) + (addons.seaSaltCream * 30) + (addons.syrupSauces * 20);
+  };
+
+  // Function to handle successful transaction and save to localStorage
+  const handleTransactionSuccess = (transactionData) => {
+    // Get existing store orders from localStorage
+    const existingOrders = JSON.parse(localStorage.getItem('storeOrders') || '[]');
+    
+    // Generate new order ID
+    const newOrderId = `ST-${String(existingOrders.length + 1).padStart(3, '0')}`;
+    
+    // Define available discounts for name mapping
+    const availableDiscounts = [
+      { id: 'senior', name: 'Senior Citizen', type: 'percentage', value: 20 },
+      { id: 'pwd', name: 'PWD', type: 'percentage', value: 20 },
+      { id: 'student', name: 'Student', type: 'percentage', value: 10 },
+      { id: 'employee', name: 'Employee', type: 'percentage', value: 15 },
+      { id: 'loyalty', name: 'Loyalty Card', type: 'fixed', value: 25 },
+      { id: 'promo100', name: 'Buy ₱100 Get ₱10 Off', type: 'fixed', value: 10 },
+      { id: 'firsttime', name: 'First Time Customer', type: 'percentage', value: 5 }
+    ];
+
+    // Convert discount IDs to discount names
+    const getDiscountNames = (discountIds) => {
+      if (!discountIds || discountIds.length === 0) return [];
+      return discountIds.map(id => {
+        const discount = availableDiscounts.find(d => d.id === id);
+        return discount ? discount.name : id;
+      });
+    };
+    
+    // Create new order object
+    const newOrder = {
+      id: newOrderId,
+      date: new Date().toISOString(),
+      items: transactionData.cartItems.length,
+      total: transactionData.total,
+      status: "PROCESSING",
+      orderItems: transactionData.cartItems.map(item => ({
+        name: item.name,
+        size: "Reg", // Default size, you can modify this based on your needs
+        quantity: item.quantity,
+        price: item.price + getTotalAddonsPrice(item.addons),
+        extras: getAddonsDescription(item.addons)
+      })),
+      paymentMethod: transactionData.paymentMethod,
+      orderType: transactionData.orderType,
+      appliedDiscounts: getDiscountNames(transactionData.appliedDiscounts || [])
+    };
+    
+    // Add new order to the beginning of the array (most recent first)
+    const updatedOrders = [newOrder, ...existingOrders];
+    
+    // Save back to localStorage
+    localStorage.setItem('storeOrders', JSON.stringify(updatedOrders));
+    
+    // Clear cart after successful transaction
+    setCartItems([]);
+  };
+
   const ProductList = ({ products, addToCart }) => {
     return (
       <div className="menu-product-grid">
@@ -202,6 +289,12 @@ function Menu() {
               onClick={() => setSelectedFilter({ type: 'all', value: 'All Products' })}
             >
               ALL PRODUCTS
+            </div>
+            <div
+              className={`menu-all-products-btn ${selectedFilter.type === 'promo' ? 'active' : ''}`}
+              onClick={() => setSelectedFilter({ type: 'promo', value: 'Promotions' })}
+            >
+              PROMOS
             </div>
           </div>
 
@@ -242,8 +335,11 @@ function Menu() {
                 <>
                   <div className="menu-product-list-header">
                     <h2 className="menu-selected-category-title">
-                      {selectedFilter.value === 'All Products' ? 'All Products' : 
-                      selectedFilter.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                      {selectedFilter.type === 'all' && 'All Products'}
+                      {selectedFilter.type === 'promo' && 'Promos'}
+                      {selectedFilter.type === 'group' && selectedFilter.value}
+                      {selectedFilter.type === 'item' &&
+                        selectedFilter.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
                     </h2>
                   </div>
 
@@ -262,7 +358,7 @@ function Menu() {
         </div>
       </div>
 
-      {/* Use the new CartPanel component */}
+      {/* Use the new CartPanel component with transaction handler */}
       <CartPanel 
         cartItems={cartItems}
         setCartItems={setCartItems}
@@ -276,6 +372,7 @@ function Menu() {
           seaSaltCream: 30,
           syrupSauces: 20,
         }}
+        onTransactionSuccess={handleTransactionSuccess}
       />
     </div>
   );

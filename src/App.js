@@ -12,6 +12,7 @@ import SalesReports from './components/admin/salesRep';
 import TransactionReports from './components/admin/transRep';
 import EmployeeRecords from './components/admin/employeeRecords';
 import Menu from './components/cashier/menu';
+import Orders from './components/cashier/orders';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/admin/transRep" element={<TransactionReports />} />
         <Route path="/admin/employeeRecords" element={<EmployeeRecords />} />
         <Route path="/cashier/menu" element={<Menu />} />
+        <Route path="/cashier/orders" element={<Orders />} />
       </Routes>
     </Router>
   );

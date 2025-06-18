@@ -181,7 +181,7 @@
 
 .discount-input-wrapper input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 10px 20px;
   border: none;
   border-radius: 12px;
   background-color: #f5f5f7;
@@ -858,4 +858,81 @@
 
 .trnsSummary-confirm-btn:hover {
   background-color: #218838;
+}
+
+.order-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.order-confirmation-modal {
+  text-align: center;
+  padding: 40px 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+.order-confirmation-icon {
+  font-size: 64px;
+  color: #4CAF50;
+  margin-bottom: 16px;
+}
+
+.order-confirmation-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.order-confirmation-subtext {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.order-confirmation-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.order-confirmation-buttons-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.order-confirmation-btn {
+  flex: 1;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.order-confirmation-btn:hover {
+  background-color: #45a049;
+}
+
+.order-confirmation-btn.secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.order-confirmation-btn.secondary:hover {
+  background-color: #d5d5d5;
 }

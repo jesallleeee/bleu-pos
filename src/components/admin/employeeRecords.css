@@ -319,13 +319,13 @@ body {
   flex-direction: column;
 }
 
-input[type="text"],
+/* input[type="text"],
 input[type="email"],
 input[type="tel"],
 input[type="date"],
 select {
   height: 42px;
-}
+}*/
 
 /* Save Button Consistency */
 .save-btn {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faMoneyBills, faQrcode, faPercent} from '@fortawesome/free-solid-svg-icons';
 import { FiMinus, FiPlus } from "react-icons/fi";
@@ -12,8 +13,37 @@ const CartPanel = ({
   setOrderType, 
   paymentMethod, 
   setPaymentMethod,
-  addonPrices
+  addonPrices,
+  onTransactionSuccess
 }) => {
+
+  const navigate = useNavigate();
+
+  // Helper function to get current local time as Date object
+  const getCurrentDateTime = () => {
+    return new Date();
+  };
+
+  // Helper function to format date for display (uses local timezone)
+  const formatDateForDisplay = (date) => {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    };
+    return date.toLocaleString('en-US', options);
+  };
+
+  // Helper function to get date in YYYY-MM-DD format for local timezone
+  const getLocalDateString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   // Define drink categories
   const drinkCategories = [
@@ -40,13 +70,15 @@ const CartPanel = ({
     syrupSauces: 0
   });
 
-  // Discounts modal state
+  // Discounts modal state - Modified to handle single discount
   const [showDiscountsModal, setShowDiscountsModal] = useState(false);
-  const [appliedDiscounts, setAppliedDiscounts] = useState([]);
-  const [stagedDiscounts, setStagedDiscounts] = useState([]);
+  const [appliedDiscount, setAppliedDiscount] = useState(null); // Changed from array to single value
+  const [stagedDiscount, setStagedDiscount] = useState(null); // Changed from array to single value
 
   // Transaction summary modal state
   const [showTransactionSummary, setShowTransactionSummary] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  
 
   // Available discounts
   const availableDiscounts = [
@@ -72,27 +104,28 @@ const CartPanel = ({
   };
 
   const openDiscountsModal = () => {
-    setStagedDiscounts([...appliedDiscounts]); // Initialize staged discounts with current applied discounts
+    setStagedDiscount(appliedDiscount); // Initialize staged discount with current applied discount
     setShowDiscountsModal(true);
   };
 
   const closeDiscountsModal = () => {
     setShowDiscountsModal(false);
-    setStagedDiscounts([]); // Clear staged discounts without applying them
+    setStagedDiscount(null); // Clear staged discount without applying
   };
 
   const applyDiscounts = () => {
-    setAppliedDiscounts([...stagedDiscounts]); // Apply the staged discounts
+    setAppliedDiscount(stagedDiscount); // Apply the staged discount
     setShowDiscountsModal(false);
-    setStagedDiscounts([]);
+    setStagedDiscount(null);
   };
 
+  // Modified to handle single discount selection
   const toggleStagedDiscount = (discountId) => {
-    setStagedDiscounts(prev => {
-      if (prev.includes(discountId)) {
-        return prev.filter(id => id !== discountId);
+    setStagedDiscount(prev => {
+      if (prev === discountId) {
+        return null; // Deselect if same discount is clicked
       } else {
-        return [...prev, discountId];
+        return discountId; // Select new discount
       }
     });
   };
@@ -144,12 +177,13 @@ const CartPanel = ({
   useEffect(() => {
     if (!isCartOpen) {
       setCartItems([]);
-      setAppliedDiscounts([]);
-      setStagedDiscounts([]);
+      setAppliedDiscount(null); // Reset to null
+      setStagedDiscount(null); // Reset to null
       setPaymentMethod('Cash');
-      setOrderType('Dine in'); // or your default value
+      setOrderType('Dine in');
     }
-  }, [isCartOpen]);
+  }, [isCartOpen, setCartItems, setPaymentMethod, setOrderType]);
+
 
   const getAddonPrice = (addon, quantity) => {
     return (addonPrices?.[addon] || 0) * quantity;
@@ -171,50 +205,50 @@ const CartPanel = ({
     }, 0);
   };
 
-  // Calculate total discount from applied discounts
+  // Calculate total discount from applied discount (single discount)
   const getDiscount = () => {
     const subtotal = getSubtotal();
     let totalDiscount = 0;
 
-    appliedDiscounts.forEach(discountId => {
-      const discount = availableDiscounts.find(d => d.id === discountId);
+    if (appliedDiscount) {
+      const discount = availableDiscounts.find(d => d.id === appliedDiscount);
       if (discount) {
         // Check if discount has minimum amount requirement
         if (discount.minAmount && subtotal < discount.minAmount) {
-          return; // Skip this discount if minimum not met
+          return 0; // No discount if minimum not met
         }
 
         if (discount.type === 'percentage') {
-          totalDiscount += (subtotal * discount.value) / 100;
+          totalDiscount = (subtotal * discount.value) / 100;
         } else if (discount.type === 'fixed') {
-          totalDiscount += discount.value;
+          totalDiscount = discount.value;
         }
       }
-    });
+    }
 
     return Math.min(totalDiscount, subtotal); // Discount can't exceed subtotal
   };
 
-  // Calculate discount for preview in modal (using staged discounts)
+  // Calculate discount for preview in modal (using staged discount)
   const getStagedDiscount = () => {
     const subtotal = getSubtotal();
     let totalDiscount = 0;
 
-    stagedDiscounts.forEach(discountId => {
-      const discount = availableDiscounts.find(d => d.id === discountId);
+    if (stagedDiscount) {
+      const discount = availableDiscounts.find(d => d.id === stagedDiscount);
       if (discount) {
         // Check if discount has minimum amount requirement
         if (discount.minAmount && subtotal < discount.minAmount) {
-          return; // Skip this discount if minimum not met
+          return 0; // No discount if minimum not met
         }
 
         if (discount.type === 'percentage') {
-          totalDiscount += (subtotal * discount.value) / 100;
+          totalDiscount = (subtotal * discount.value) / 100;
         } else if (discount.type === 'fixed') {
-          totalDiscount += discount.value;
+          totalDiscount = discount.value;
         }
       }
-    });
+    }
 
     return Math.min(totalDiscount, subtotal); // Discount can't exceed subtotal
   };
@@ -248,23 +282,64 @@ const CartPanel = ({
     setShowTransactionSummary(true);
   };
 
-  // Function to confirm transaction
+  // Function to generate unique order ID
+  const generateOrderId = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `ST-${timestamp.toString().slice(-6)}${random}`;
+  };
+
   const confirmTransaction = () => {
-    // Here you would typically send the order to your backend
-    alert('Transaction processed successfully!');
-    
-    // Clear the cart and close modals
+    const currentDateTime = getCurrentDateTime();
+
+    const transactionData = {
+      id: generateOrderId(),
+      date: currentDateTime.toISOString(),
+      dateDisplay: formatDateForDisplay(currentDateTime),
+      localDateString: getLocalDateString(currentDateTime),
+      cartItems: cartItems,
+      items: cartItems.reduce((total, item) => total + item.quantity, 0),
+      total: getTotal(),
+      paymentMethod: paymentMethod,
+      orderType: orderType,
+      appliedDiscounts: appliedDiscount ? [appliedDiscount] : [],
+      status: 'PROCESSING',
+      orderItems: cartItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price + getTotalAddonsPrice(item.addons),
+        basePrice: item.price,
+        addons: item.addons || {},
+        category: item.category
+      }))
+    };
+
+    try {
+      const existingOrders = JSON.parse(localStorage.getItem('storeOrders') || '[]');
+      const updatedOrders = [transactionData, ...existingOrders];
+      localStorage.setItem('storeOrders', JSON.stringify(updatedOrders));
+    } catch (error) {
+      console.error('Error saving order to localStorage:', error);
+    }
+
+    if (onTransactionSuccess) {
+      onTransactionSuccess(transactionData);
+    }
+
+
+    setShowConfirmation(true);
     setCartItems([]);
-    setAppliedDiscounts([]);
+    setAppliedDiscount(null);
     setShowTransactionSummary(false);
   };
 
-  // Function to get applied discount names
-  const getAppliedDiscountNames = () => {
-    return appliedDiscounts.map(discountId => {
-      const discount = availableDiscounts.find(d => d.id === discountId);
+  // Function to get applied discount name (single discount)
+  const getAppliedDiscountName = () => {
+    if (appliedDiscount) {
+      const discount = availableDiscounts.find(d => d.id === appliedDiscount);
       return discount ? discount.name : '';
-    }).filter(name => name !== '');
+    }
+    return '';
   };
 
   const AddonsModal = () => {
@@ -331,13 +406,13 @@ const CartPanel = ({
       <div className="modal-overlay" onClick={closeDiscountsModal}>
         <div className="discounts-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h3>Apply Discounts</h3>
+            <h3>Apply Discount</h3>
             <button className="close-modal" onClick={closeDiscountsModal}>×</button>
           </div>
           
           <div className="discounts-content">
             {availableDiscounts.map(discount => {
-              const isStaged = stagedDiscounts.includes(discount.id); // Use staged discounts for display
+              const isStaged = stagedDiscount === discount.id; // Check if this discount is staged
               const subtotal = getSubtotal();
               const isEligible = !discount.minAmount || subtotal >= discount.minAmount;
               
@@ -345,13 +420,14 @@ const CartPanel = ({
                 <div 
                   key={discount.id} 
                   className={`discount-item ${isStaged ? 'selected' : ''} ${!isEligible ? 'disabled' : ''}`}
-                  onClick={() => isEligible && toggleStagedDiscount(discount.id)} // Use staged toggle
+                  onClick={() => isEligible && toggleStagedDiscount(discount.id)}
                 >
                   <div className="discount-checkbox">
                     <input 
-                      type="checkbox" 
-                      checked={isStaged} // Use staged discounts
-                      onChange={() => isEligible && toggleStagedDiscount(discount.id)} // Use staged toggle
+                      type="radio" // Changed from checkbox to radio
+                      name="discount" // Add name attribute for radio group
+                      checked={isStaged}
+                      onChange={() => isEligible && toggleStagedDiscount(discount.id)}
                       disabled={!isEligible}
                     />
                   </div>
@@ -374,9 +450,9 @@ const CartPanel = ({
 
           <div className="modal-footer-discount">
             <div className="discount-summary">
-              <span>Total Discount: ₱{getStagedDiscount().toFixed(0)}</span> {/* Show staged discount preview */}
+              <span>Total Discount: ₱{getStagedDiscount().toFixed(0)}</span>
             </div>
-            <button className="apply-btn" onClick={applyDiscounts}>Apply Discounts</button> {/* Use applyDiscounts function */}
+            <button className="apply-btn" onClick={applyDiscounts}>Apply Discount</button>
           </div>
         </div>
       </div>
@@ -437,17 +513,15 @@ const CartPanel = ({
               </div>  
             </div>
 
-           {appliedDiscounts.length > 0 && (
+           {appliedDiscount && (
             <div className="trnsSummary-applied-discounts">
               <div className="trnsSummary-applied-discounts-header">
-                <h4>Applied Discounts</h4>
+                <h4>Applied Discount</h4>
                 <div className="trnsSummary-applied-discounts-list">
-                  {getAppliedDiscountNames().map((discountName, index) => (
-                    <div key={index} className="trnsSummary-discount-item-summary">
-                      <FontAwesomeIcon icon={faPercent} />
-                      <span>{discountName}</span>
-                    </div>
-                  ))}
+                  <div className="trnsSummary-discount-item-summary">
+                    <FontAwesomeIcon icon={faPercent} />
+                    <span>{getAppliedDiscountName()}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -569,7 +643,7 @@ const CartPanel = ({
               <input 
                 type="text" 
                 placeholder="Discounts and Promotions" 
-                value={appliedDiscounts.length > 0 ? `${appliedDiscounts.length} discount(s) applied` : ''}
+                value={appliedDiscount ? `${getAppliedDiscountName()} discount applied` : ''}
                 readOnly
               />
             </div>
@@ -615,6 +689,31 @@ const CartPanel = ({
             Process Transaction
           </button>
         </div>
+        {showConfirmation && (
+          <div className="order-confirmation-overlay">
+            <div className="order-confirmation-modal">
+              <div className="order-confirmation-icon">✔</div>
+              <div className="order-confirmation-title">Order Confirmed!</div>
+              <div className="order-confirmation-subtext">
+                Your order has been placed successfully.
+              </div>
+              <div className="order-confirmation-buttons-row">
+                <button
+                  className="order-confirmation-btn secondary"
+                  onClick={() => setShowConfirmation(false)}
+                >
+                  Stay Here
+                </button>
+                <button
+                  className="order-confirmation-btn"
+                  onClick={() => navigate('/cashier/orders')}
+                >
+                  Go to Orders
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
       <AddonsModal />
