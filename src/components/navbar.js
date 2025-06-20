@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import './navbar.css';
 import logo from '../assets/logo.png';
-import { HiOutlineShoppingBag, HiOutlineClipboardList, HiOutlineChartBar } from 'react-icons/hi';
+import { HiOutlineShoppingBag, HiOutlineClipboardList, HiOutlineChartBar, HiOutlineTrash } from 'react-icons/hi';
 import { FaBell, FaChevronDown } from 'react-icons/fa';
 
 const Navbar = ({ isCartOpen, isOrderPanelOpen }) => {
@@ -70,8 +70,11 @@ const Navbar = ({ isCartOpen, isOrderPanelOpen }) => {
           <Link to="/cashier/orders" className={`nav-item ${location.pathname === '/cashier/orders' ? 'active' : ''}`}>
             <HiOutlineClipboardList className="icon" /> Orders
           </Link>
-          <Link to="/sales" className={`nav-item ${location.pathname === '/sales' ? 'active' : ''}`}>
+          <Link to="/cashier/cashierSales" className={`nav-item ${location.pathname === '/cashier/cashierSales' ? 'active' : ''}`}>
             <HiOutlineChartBar className="icon" /> Sales
+          </Link>
+          <Link to="/cashier/cashierSpillage" className={`nav-item ${location.pathname === '/cashier/cashierSpillage' ? 'active' : ''}`}>
+            <HiOutlineTrash className="icon" /> Spillage
           </Link>
         </div>
       </div>

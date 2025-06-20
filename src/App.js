@@ -13,6 +13,8 @@ import TransactionReports from './components/admin/transRep';
 import EmployeeRecords from './components/admin/employeeRecords';
 import Menu from './components/cashier/menu';
 import Orders from './components/cashier/orders';
+import CashierSales from './components/cashier/cashierSales';
+import CashierSpillage from './components/cashier/cashierSpillage';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
         <Route path="/admin/employeeRecords" element={<EmployeeRecords />} />
         <Route path="/cashier/menu" element={<Menu />} />
         <Route path="/cashier/orders" element={<Orders />} />
+        <Route path="/cashier/cashierSales" element={<CashierSales />} />
+        <Route path="/cashier/cashierSpillage" element={<CashierSpillage />} />
       </Routes>
     </Router>
   );
